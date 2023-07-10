@@ -56,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "eClearance.urls"
+AUTH_USER_MODEL = "eClearanceAuth.User"
 
 TEMPLATES = [
     {
