@@ -110,7 +110,56 @@ class CreateSingleStudentForm(forms.ModelForm):
 
         return username
 
+
     class Meta:
         model = User
         fields = ('username', 'name', 'passport')
+
+
+class EditSingleStudentForm(CreateSingleStudentForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CreateSingleStudentForm, self).__init__(*args, **kwargs)
+        student_profile = StudentProfile.objects.get(user=kwargs['instance'])
+        student_department = Department.objects.get(dept_title=student_profile.department)
+        student_programme = Programme.objects.get(programme_title=student_profile.programme)
+        student_session = Session.objects.get(session_title=student_profile.session)
+        self.fields['session'].initial = student_session
+        self.fields['programme'].initial = student_programme
+        self.fields['department'].initial = student_department
+
+    session = forms.ModelChoiceField(queryset=Session.objects.all(), empty_label="(Select Session)", required=True, help_text="Select academic session", widget=forms.Select(
+        attrs={
+            'class': 'form-control',
+        }
+    ))
+
+    programme = forms.ModelChoiceField(queryset=Programme.objects.all(), empty_label="(Select Programme)", required=True, help_text="Select students programme", widget=forms.Select(
+        attrs={
+            'class': 'form-control',
+        }
+    ))
+
+    department = forms.ModelChoiceField(queryset=Department.objects.all(), empty_label="(Select Department)", required=True, help_text="Select student's department", widget=forms.Select(
+        attrs={
+            'class': 'form-control',
+        }
+    ))
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username').upper()
+        check = User.objects.filter(username=username)
+
+        if self.instance:
+            check = check.exclude(pk=self.instance.pk)
+
+        if check.exists():
+            raise forms.ValidationError("Username already exist!")
+
+        return username
+
+
+    class Meta:
+        model = User
+        fields = ('username', 'name', 'passport', 'session', 'programme', 'department')
 

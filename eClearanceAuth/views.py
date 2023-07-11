@@ -158,3 +158,23 @@ class ManageStudentView(LoginRequiredMixin, ListView):
 
     def get_success_url(self):
         return reverse("auth:manage_student")
+
+class UpdateStudentView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = "backend/admin/edit_delete_student.html"
+    form_class = EditSingleStudentForm
+    success_message = 'Updated Successfully!'
+    queryset = User.objects.all()
+
+    def get_success_url(self):
+        return reverse("auth:manage_student")
+
+    def form_valid(self, form):
+
+        student = StudentProfile.objects.get(user=form.instance)
+        student.session = form.cleaned_data.get('session')
+        student.department = form.cleaned_data.get('department')
+        student.programme = form.cleaned_data.get('programme')
+        student.save()
+        form = super().form_valid(form)
+
+        return form
