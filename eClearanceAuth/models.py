@@ -171,6 +171,9 @@ class StudentProfile(models.Model):
     programme = models.ForeignKey(
         to="Programme", on_delete=models.CASCADE, blank=True)
 
+    date_joined = models.DateTimeField(
+        verbose_name='date_joined', auto_now_add=True)
+
     def __str__(self):
         return self.user.name
 

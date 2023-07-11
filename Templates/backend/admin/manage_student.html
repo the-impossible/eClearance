@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Manage Students{% endblock title %}
+
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    {% block nav %}{% include 'partials/auth_nav.html' %}{% endblock nav %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      {% include 'partials/auth_sidebar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include "partials/messages.html" %}
+          <div class="row">
+
+            <div class="col.lg-12 grid-margin">
+              <button type="button" class="btn rounded-pill btn-primary ml-4" data-toggle="modal"
+              data-target="#single">
+                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Create a student
+              </button>
+              <button type="button" class="btn rounded-pill btn-secondary" data-toggle="modal"
+              data-target="#multiple">
+                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Upload students
+              </button>
+            </div>
+
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Manage Students</h4>
+
+                  <p class="card-description">
+                    Use the table below to  <code>modify each student</code>
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>S/N</th>
+                          <th>Name</th>
+                          <th>RegNo.</th>
+                          <th>Passport</th>
+                          <th>Department</th>
+                          <th>Session</th>
+                          <th>Programme</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                        {% if object_list %}
+
+                          {% for object in object_list %}
+                            <tr>
+                              <td>{{forloop.counter}}</td>
+                              <td>{{object.user.name|upper}}</td>
+                              <td>{{object.user.username}}</td>
+                              <td><img src="{{object.user.passport.url}}" alt="passport"></td>
+                              <td>{{object.department}}</td>
+                              <td><label class="badge badge-danger">{{object.session}}</label></td>
+                              <td class="text-success"> {{object.programme}} </td>
+                              <td></td>
+                            </tr>
+                          {% endfor %}
+
+                        {% else %}
+                        <tr>
+                          <td colspan="12">
+                            <div class="jumbotron text-center p-5">
+                              <!-- illustration can be used here too -->
+                              <p style="font-size: 4em;">📂</p> <br> <br>
+                              <p style="font-size: 1.5em;">No Student Record Here!</p>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        {% block footer %}{% include 'partials/auth_footer.html' %}{% endblock footer %}
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+    <!-- Modal Student -->
+    <div class="modal fade" id="single" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create a Student</h5>
+            <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+            </button>
+          </div>
+          <form method="POST" enctype="multipart/form-data">
+            <div class="modal-body">
+              Fill the form below to create a single <code>student profile</code>
+              {{ form1|crispy }}
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                {% csrf_token %}
+              <button type="submit" name="single" class="btn btn-success">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Multiple -->
+    <div class="modal fade" id="multiple" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create a Student</h5>
+            <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+            </button>
+          </div>
+          <form method="POST" enctype="multipart/form-data">
+            <div class="modal-body">
+              Fill the form below to create student from a <code>file</code>
+              {{ form2|crispy }}
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                {% csrf_token %}
+              <button type="submit" name="multiple" class="btn btn-success">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+{% include 'partials/modal_logout.html' %}
+{% block script %}{% include 'partials/auth_script.html' %}{% endblock script %}
+
+{% endblock body %}
