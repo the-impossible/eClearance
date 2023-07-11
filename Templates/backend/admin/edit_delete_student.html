@@ -19,19 +19,42 @@
         <div class="content-wrapper">
           {% include "partials/messages.html" %}
           <div class="row">
-
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Default form</h4>
+                  <h4 class="card-title">Edit Student Information</h4>
                   <p class="card-description">
-                    Basic form layout
+                    Modify the form below to change student account Information, click the delete button to delete student account
                   </p>
+
                   <form class="forms-sample" method="post">
                     {% csrf_token %}
                     {{form|crispy}}
+                    <button type="button" class="btn btn-danger mr-2" data-toggle="modal"
+                    data-target="#basicModal">Delete</button>
                     <button type="submit" class="btn btn-primary mr-2">Submit</button>
                   </form>
+
+                  <div class="modal fade" id="basicModal" style="display: none;" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete Confirmation</h5>
+                                <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">Are you sure you want to delete {{ object.name }} account?.</div>
+                            <div class="modal-footer">
+                              <form action="{% url 'auth:delete_student' object.pk %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-block">Delete</button>
+                              </form>
+                              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 </div>
               </div>
             </div>
@@ -47,54 +70,6 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
-
-    <!-- Modal Student -->
-    <div class="modal fade" id="single" style="display: none;" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Create a Student</h5>
-            <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
-            </button>
-          </div>
-          <form method="POST" enctype="multipart/form-data">
-            <div class="modal-body">
-              Fill the form below to create a single <code>student profile</code>
-              {{ form1|crispy }}
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                {% csrf_token %}
-              <button type="submit" name="single" class="btn btn-success">Submit</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Multiple -->
-    <div class="modal fade" id="multiple" style="display: none;" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Create a Student</h5>
-            <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
-            </button>
-          </div>
-          <form method="POST" enctype="multipart/form-data">
-            <div class="modal-body">
-              Fill the form below to create student from a <code>file</code>
-              {{ form2|crispy }}
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                {% csrf_token %}
-              <button type="submit" name="multiple" class="btn btn-success">Submit</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
 
 {% include 'partials/modal_logout.html' %}
 {% block script %}{% include 'partials/auth_script.html' %}{% endblock script %}

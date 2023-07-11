@@ -11,7 +11,9 @@ urlpatterns = [
     path('logout', LogoutView.as_view(), name="logout"),
 
     path('dashboard', DashboardView.as_view(), name="dashboard"),
+
     #Admin-------> student
     path('manage_student', ManageStudentView.as_view(), name="manage_student"),
     path('update_student/<str:pk>', UpdateStudentView.as_view(), name="update_student"),
+    path('delete_student/<str:pk>', DeleteStudentView.as_view(), name="delete_student"),
 ]

@@ -63,7 +63,7 @@
                               <td>{{object.user.username}}</td>
                               <td>
                                 <a href="{% url 'auth:update_student' object.user.pk %}"> <img src="{{object.user.passport.url}}" alt="passport"></a>
-                               </td>
+                              </td>
                               <td>{{object.department}}</td>
                               <td><label class="badge badge-danger">{{object.session}}</label></td>
                               <td class="text-success"> {{object.programme}} </td>

@@ -178,3 +178,8 @@ class UpdateStudentView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         form = super().form_valid(form)
 
         return form
+
+class DeleteStudentView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = User
+    success_message = 'Deleted Successfully!'
+    success_url = reverse_lazy('auth:manage_student')
