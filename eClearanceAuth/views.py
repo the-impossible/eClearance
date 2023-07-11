@@ -100,6 +100,124 @@ class ManageStudentView(LoginRequiredMixin, ListView):
                 session = form2.cleaned_data.get('session')
                 programme = form2.cleaned_data.get('programme')
                 department = form2.cleaned_data.get('department')
+                user_type = UserType.objects.get(user_type="Student")
+
+                for row in csv_obj:
+                    objs.append(User(
+                        username=row[0].upper(), name=row[1], user_type=user_type, password=make_password(PASSWORD)))
+
+                created_users = User.objects.bulk_create(objs)
+
+                for user in created_users:
+                    sub_objs.append(StudentProfile(
+                        user=user, department=department, session=session, programme=programme))
+                created_user_profiles = StudentProfile.objects.bulk_create(
+                    sub_objs)
+
+                messages.success(request, "Students has been created")
+            else:
+
+                messages.error(request, form2.errors.as_text())
+
+                return render(request, 'backend/admin/manage_student.html',
+
+                              context={
+                                  'form1': self.form_class,
+                                  'form2': form2,
+                                  'object_list': self.get_queryset()
+                              })
+
+            return HttpResponseRedirect(self.get_success_url())
+
+        if 'single' in request.POST:
+
+            if form1.is_valid():
+
+                session = form1.cleaned_data.get('session')
+                programme = form1.cleaned_data.get('programme')
+                department = form1.cleaned_data.get('department')
+
+                instance = form1.save(commit=False)
+                instance.user_type=UserType.objects.get(user_type="Student")
+                instance.user_type = UserType.objects.get(user_type="Student")
+                instance.password = make_password(PASSWORD)
+                instance.save()
+
+                StudentProfile.objects.create(
+                    user=instance, department=department, session=session, programme=programme)
+                messages.success(request, "Student created successfully!")
+            else:
+
+                messages.error(request, form1.errors.as_text())
+                return render(request, 'backend/admin/manage_student.html',
+
+                              context={
+                                  'form1': form1,
+                                  'form2': self.second_form_class,
+                                  'object_list': self.get_queryset()
+                              })
+
+            return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse("auth:manage_student")
+
+class UpdateStudentView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = "backend/admin/edit_delete_student.html"
+    form_class = EditSingleStudentForm
+    success_message = 'Updated Successfully!'
+    queryset = User.objects.all()
+
+    def get_success_url(self):
+        return reverse("auth:manage_student")
+
+    def form_valid(self, form):
+
+        student = StudentProfile.objects.get(user=form.instance)
+        student.session = form.cleaned_data.get('session')
+        student.department = form.cleaned_data.get('department')
+        student.programme = form.cleaned_data.get('programme')
+        student.save()
+        form = super().form_valid(form)
+
+        return form
+
+class DeleteStudentView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = User
+    success_message = 'Deleted Successfully!'
+    success_url = reverse_lazy('auth:manage_student')
+
+class ManageOfficeView(LoginRequiredMixin, ListView):
+    template_name = "backend/admin/manage_office.html"
+    model = StudentProfile
+    form_class = CreateSingleStudentForm
+    second_form_class = CreateMultipleStudentForm
+    queryset = StudentProfile.objects.all().order_by('-date_joined')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form1"] = self.form_class
+        context["form2"] = self.second_form_class
+        return context
+
+    def post(self, request):
+
+        form1 = self.form_class(request.POST, request.FILES)
+        form2 = self.second_form_class(request.POST, request.FILES)
+
+        if 'multiple' in request.POST:
+
+            if form2.is_valid():
+
+                csv_obj = csv.reader(codecs.iterdecode(
+                    request.FILES['file'], 'utf-8'))
+
+                objs = []
+                sub_objs = []
+
+                session = form2.cleaned_data.get('session')
+                programme = form2.cleaned_data.get('programme')
+                department = form2.cleaned_data.get('department')
 
                 for row in csv_obj:
                     objs.append(User(
@@ -158,28 +276,3 @@ class ManageStudentView(LoginRequiredMixin, ListView):
 
     def get_success_url(self):
         return reverse("auth:manage_student")
-
-class UpdateStudentView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    template_name = "backend/admin/edit_delete_student.html"
-    form_class = EditSingleStudentForm
-    success_message = 'Updated Successfully!'
-    queryset = User.objects.all()
-
-    def get_success_url(self):
-        return reverse("auth:manage_student")
-
-    def form_valid(self, form):
-
-        student = StudentProfile.objects.get(user=form.instance)
-        student.session = form.cleaned_data.get('session')
-        student.department = form.cleaned_data.get('department')
-        student.programme = form.cleaned_data.get('programme')
-        student.save()
-        form = super().form_valid(form)
-
-        return form
-
-class DeleteStudentView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
-    model = User
-    success_message = 'Deleted Successfully!'
-    success_url = reverse_lazy('auth:manage_student')

@@ -163,3 +163,53 @@ class EditSingleStudentForm(CreateSingleStudentForm):
         model = User
         fields = ('username', 'name', 'passport', 'session', 'programme', 'department')
 
+
+"""
+class AdministrativeProfile(models.Model):
+
+    profile_id = models.UUIDField(
+        default=uuid.uuid4, primary_key=True, unique=True, editable=False)
+
+    user = models.OneToOneField(
+        to="User", on_delete=models.CASCADE, blank=True)
+
+    signature = models.ImageField(upload_to='uploads/signature/', null=True)
+
+    def __str__(self):
+        return f"{self.user.name}"
+"""
+
+class CreateAdministrativeProfileForm(forms.ModelForm):
+
+    username = forms.CharField(help_text='Enter Registration number', widget=forms.TextInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter Registration number',
+        }
+    ))
+
+    name = forms.CharField(help_text='Enter Full name', widget=forms.TextInput(
+        attrs={
+            'placeholder': 'Enter Full name',
+            'class': 'form-control',
+        }
+    ))
+
+    passport = forms.ImageField(required=False, widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    user_type = forms.ModelChoiceField(queryset=Session.objects.all(), empty_label="(Select Session)", required=True, help_text="Select academic session", widget=forms.Select(
+        attrs={
+            'class': 'form-control',
+        }
+    ))
+
+
+    class Meta:
+        model = User
+        fields = ('username', 'name', 'passport', 'user_type')
