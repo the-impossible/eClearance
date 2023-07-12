@@ -3,6 +3,7 @@ import io
 from django import forms
 from eClearanceAuth.models import *
 
+
 class FileHandler:
     def __init__(self, obj):
         self.csv_obj = obj
@@ -110,7 +111,6 @@ class CreateSingleStudentForm(forms.ModelForm):
 
         return username
 
-
     class Meta:
         model = User
         fields = ('username', 'name', 'passport')
@@ -121,9 +121,12 @@ class EditSingleStudentForm(CreateSingleStudentForm):
     def __init__(self, *args, **kwargs):
         super(CreateSingleStudentForm, self).__init__(*args, **kwargs)
         student_profile = StudentProfile.objects.get(user=kwargs['instance'])
-        student_department = Department.objects.get(dept_title=student_profile.department)
-        student_programme = Programme.objects.get(programme_title=student_profile.programme)
-        student_session = Session.objects.get(session_title=student_profile.session)
+        student_department = Department.objects.get(
+            dept_title=student_profile.department)
+        student_programme = Programme.objects.get(
+            programme_title=student_profile.programme)
+        student_session = Session.objects.get(
+            session_title=student_profile.session)
         self.fields['session'].initial = student_session
         self.fields['programme'].initial = student_programme
         self.fields['department'].initial = student_department
@@ -158,28 +161,11 @@ class EditSingleStudentForm(CreateSingleStudentForm):
 
         return username
 
-
     class Meta:
         model = User
-        fields = ('username', 'name', 'passport', 'session', 'programme', 'department')
+        fields = ('username', 'name', 'passport',
+                  'session', 'programme', 'department')
 
-
-"""
-class AdministrativeProfile(models.Model):
-
-   profile_id = models.UUIDField(
-        default=uuid.uuid4, primary_key=True, unique=True, editable=False)
-
-    user = models.OneToOneField(
-        to="User", on_delete=models.CASCADE, blank=True)
-
-    office = models.ForeignKey(
-        to="Office", on_delete=models.CASCADE, blank=True, null=True)
-
-    a_departmental_office = models.ForeignKey(to="Department", on_delete=models.CASCADE, blank=True, null=True)
-
-    signature = models.ImageField(upload_to='uploads/signature/', null=True, blank=True)
-"""
 
 class CreateAdministrativeProfileForm(forms.ModelForm):
 
@@ -225,6 +211,58 @@ class CreateAdministrativeProfileForm(forms.ModelForm):
         }
     ))
 
+    class Meta:
+        model = User
+        fields = ('username', 'name', 'passport')
+
+
+class EditAdministrativeProfileForm(CreateAdministrativeProfileForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EditAdministrativeProfileForm, self).__init__(*args, **kwargs)
+        administrative_profile = AdministrativeProfile.objects.get(
+            user=kwargs['instance'])
+        administrative_office = Office.objects.get(
+            office_title=administrative_profile.office)
+        try:
+            administrative_office_department = Department.objects.get(
+                dept_title=administrative_profile.a_departmental_office)
+            self.fields['administrative_office_department'].initial = administrative_office_department
+        except Department.DoesNotExist:
+            pass
+        self.fields['administrative_office'].initial = administrative_office
+
+    signature = forms.ImageField(required=False, widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    administrative_office = forms.ModelChoiceField(queryset=Office.objects.all(), empty_label="(Select administrative office)", required=True, help_text="Select administrative office", widget=forms.Select(
+        attrs={
+            'class': 'form-control',
+        }
+    ))
+
+    administrative_office_department = forms.ModelChoiceField(queryset=Department.objects.all(), empty_label="(Select administrative office department )", required=False, help_text="if administrative office is related to a department then select department otherwise skip", widget=forms.Select(
+        attrs={
+            'class': 'form-control',
+        }
+    ))
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username').upper()
+        check = User.objects.filter(username=username)
+
+        if self.instance:
+            check = check.exclude(pk=self.instance.pk)
+
+        if check.exists():
+            raise forms.ValidationError("Username already exist!")
+
+        return username
 
     class Meta:
         model = User

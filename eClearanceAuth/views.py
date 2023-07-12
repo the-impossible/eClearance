@@ -218,11 +218,14 @@ class ManageOfficeView(LoginRequiredMixin, ListView):
                     request, 'Select administrative office department if office is related to a department')
                 return render(request, 'backend/admin/manage_office.html',
 
-                    context={
-                        'form1': form1,
-                        'object_list': self.get_queryset()
-                    }
-                )
+                              context={
+                                  'form1': form1,
+                                  'object_list': self.get_queryset()
+                              }
+                              )
+            if administrative_office.office_title != 'Department' and administrative_office_department != None:
+                administrative_office_department = None
+
             signature = form1.cleaned_data.get('signature')
 
             instance = form1.save(commit=False)
@@ -248,3 +251,54 @@ class ManageOfficeView(LoginRequiredMixin, ListView):
 
     def get_success_url(self):
         return reverse("auth:manage_offices")
+
+
+class UpdateAdministrativeOfficeView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = "backend/admin/edit_delete_office.html"
+    form_class = EditAdministrativeProfileForm
+    success_message = 'Updated Successfully!'
+    queryset = User.objects.all()
+
+    def get_success_url(self):
+        return reverse("auth:manage_offices")
+
+    def form_valid(self, form):
+
+        admin = AdministrativeProfile.objects.get(user=form.instance)
+        if not form.cleaned_data.get('signature') == None:
+            admin.signature = form.cleaned_data.get('signature')
+
+        administrative_office = form.cleaned_data.get(
+            'administrative_office')
+        administrative_office_department = form.cleaned_data.get(
+            'administrative_office_department')
+
+        if administrative_office.office_title == 'Department' and administrative_office_department == None:
+            form.add_error('administrative_office_department',
+                           'Select administrative_office_department')
+            messages.error(
+                self.request, 'Select administrative office department if office is related to a department')
+            return render(self.request, 'backend/admin/edit_delete_office.html',
+
+                          context={
+                              'form': form,
+                              'object': self.get_object()
+                          }
+                          )
+
+        if administrative_office.office_title != 'Department' and administrative_office_department != None:
+            admin.a_departmental_office = None
+        else:
+            admin.a_departmental_office = administrative_office_department
+
+        admin.office = administrative_office
+        admin.save()
+        form = super().form_valid(form)
+
+        return form
+
+
+class DeleteAdministrativeOfficeView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = User
+    success_message = 'Deleted Successfully!'
+    success_url = reverse_lazy('auth:manage_offices')
