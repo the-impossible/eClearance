@@ -23,21 +23,17 @@
             <div class="col.lg-12 grid-margin">
               <button type="button" class="btn rounded-pill btn-primary ml-4" data-toggle="modal"
               data-target="#single">
-                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Create a student
-              </button>
-              <button type="button" class="btn rounded-pill btn-secondary" data-toggle="modal"
-              data-target="#multiple">
-                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Upload students
+                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Create administrative office
               </button>
             </div>
 
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Manage Students</h4>
+                  <h4 class="card-title">Manage Offices</h4>
 
                   <p class="card-description">
-                    Use the table below to  <code>modify each student</code>
+                    Use the table below to  <code>modify each administrative users</code>
                   </p>
                   <div class="table-responsive">
                     <table class="table table-hover">
@@ -45,11 +41,11 @@
                         <tr>
                           <th>S/N</th>
                           <th>Name</th>
-                          <th>RegNo.</th>
+                          <th>FileNo.</th>
                           <th>Passport</th>
+                          <th>Office</th>
+                          <th>Signature</th>
                           <th>Department</th>
-                          <th>Session</th>
-                          <th>Programme</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -64,9 +60,15 @@
                               <td>
                                 <a href="{% url 'auth:update_student' object.user.pk %}"> <img src="{{object.user.passport.url}}" alt="passport"></a>
                               </td>
-                              <td>{{object.department}}</td>
-                              <td><label class="badge badge-danger">{{object.session}}</label></td>
-                              <td class="text-success"> {{object.programme}} </td>
+                              <td>{{object.office}}</td>
+                              <td>
+                                {% if object.signature %}
+                                <img src=" {{object.signature.url}}" alt="signature">
+                                {% else %}
+                                <label class="badge badge-danger">Not uploaded</label>
+                                {% endif %}
+                              </td>
+                              <td class="text-success"> {{object.a_departmental_office}} </td>
                             </tr>
                           {% endfor %}
 
@@ -76,7 +78,7 @@
                             <div class="jumbotron text-center p-5">
                               <!-- illustration can be used here too -->
                               <p style="font-size: 4em;">📂</p> <br> <br>
-                              <p style="font-size: 1.5em;">No Student Record Here!</p>
+                              <p style="font-size: 1.5em;">No Office Record Here!</p>
                             </div>
                           </td>
                         </tr>
@@ -105,43 +107,21 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Create a Student</h5>
+            <h5 class="modal-title">Create an administrative office</h5>
             <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
             </button>
           </div>
           <form method="POST" enctype="multipart/form-data">
             <div class="modal-body">
-              Fill the form below to create a single <code>student profile</code>
+              Fill the form below to create a user with <code>an administrative priviledge</code>
+              <br>
+              <br>
               {{ form1|crispy }}
             </div>
             <div class="modal-footer">
               <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                 {% csrf_token %}
-              <button type="submit" name="single" class="btn btn-success">Submit</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Multiple -->
-    <div class="modal fade" id="multiple" style="display: none;" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Create a Student</h5>
-            <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
-            </button>
-          </div>
-          <form method="POST" enctype="multipart/form-data">
-            <div class="modal-body">
-              Fill the form below to create student from a <code>file</code>
-              {{ form2|crispy }}
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                {% csrf_token %}
-              <button type="submit" name="multiple" class="btn btn-success">Submit</button>
+              <button type="submit" class="btn btn-success">Submit</button>
             </div>
           </form>
         </div>

@@ -140,6 +140,19 @@ class Programme(models.Model):
         verbose_name_plural = 'Programmes'
 
 
+class Office(models.Model):
+    office_title = models.CharField(max_length=30, unique=True)
+    office_description = models.CharField(
+        max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return self.office_title
+
+    class Meta:
+        db_table = 'Office'
+        verbose_name_plural = 'Offices'
+
+
 class AdministrativeProfile(models.Model):
 
     profile_id = models.UUIDField(
@@ -148,7 +161,17 @@ class AdministrativeProfile(models.Model):
     user = models.OneToOneField(
         to="User", on_delete=models.CASCADE, blank=True)
 
-    signature = models.ImageField(upload_to='uploads/signature/', null=True)
+    office = models.ForeignKey(
+        to="Office", on_delete=models.CASCADE, blank=True, null=True)
+
+    a_departmental_office = models.ForeignKey(
+        to="Department", on_delete=models.CASCADE, blank=True, null=True)
+
+    signature = models.ImageField(
+        upload_to='uploads/signature/', null=True, blank=True)
+
+    date_created = models.DateTimeField(
+        verbose_name='date_created', auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.name}"
