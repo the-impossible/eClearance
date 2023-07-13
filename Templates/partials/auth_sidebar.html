@@ -18,6 +18,10 @@
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
+
+
+      {% if request.user.user_type.user_type == "Admin" %}
+
       <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
           <i class="icon-head menu-icon"></i>
@@ -43,6 +47,16 @@
           </ul>
         </div>
       </li>
+      {% elif request.user.user_type.user_type == "Office" %}
+
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'auth:clearance_application' %}">
+          <i class="icon-disc menu-icon"></i>
+          <span class="menu-title">Clearance Application</span>
+        </a>
+      </li>
+
+      {% else %}
 
       <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#ui-clearance" aria-expanded="false" aria-controls="ui-clearance">
@@ -52,11 +66,12 @@
         </a>
         <div class="collapse" id="ui-clearance">
           <ul class="nav flex-column sub-menu">
-            <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Apply Clearance</a></li>
-            <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Manage Clearance</a></li>
+            <li class="nav-item"> <a class="nav-link" href="{% url 'auth:manage_clearance' %}">Manage Clearance</a></li>
           </ul>
         </div>
       </li>
+
+      {% endif %}
 
       <li class="nav-item">
         <a class="nav-link" href="pages/icons/feather-icons.html">

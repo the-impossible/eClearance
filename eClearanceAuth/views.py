@@ -302,3 +302,112 @@ class DeleteAdministrativeOfficeView(LoginRequiredMixin, SuccessMessageMixin, De
     model = User
     success_message = 'Deleted Successfully!'
     success_url = reverse_lazy('auth:manage_offices')
+
+
+class ApplyClearanceView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
+    form_class = ClearanceForm
+    template_name = "backend/users/apply_clearance.html"
+    success_message = "Application successful you can now track status"
+
+    def has_applied(self):
+        student_clearance = StudentClearance.objects.filter(
+            student=StudentProfile.objects.get(user=self.request.user))
+        if student_clearance:
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = self.form_class
+        context["has_applied"] = self.has_applied()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            instance = form.save(commit=False)
+            student = StudentProfile.objects.get(user=self.request.user)
+
+            passport = str(student.user.passport).split("/")[-1].split(".")[0]
+
+            if passport == 'user':
+                messages.error(self.request, "You have to update your profile")
+                return render(self.request, self.template_name, context={'form': form, 'has_applied': self.has_applied()})
+
+
+            clearance = StudentClearance.objects.create(student=student)
+
+            library = LibraryClearance.objects.create(clearance=clearance)
+            hostel = HostelClearance.objects.create(clearance=clearance)
+            sport = SportClearance.objects.create(clearance=clearance)
+            department = DepartmentalClearance.objects.create(clearance=clearance)
+            instance.clearance = clearance
+
+            instance.save()
+
+            clearance.library_clearance=library
+            clearance.hostel_clearance=hostel
+            clearance.sport_clearance=sport
+            clearance.internal_audit_clearance=instance
+            clearance.departmental_clearance=department
+            clearance.save()
+
+
+            messages.success(self.request, self.success_message)
+
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            messages.error(self.request, form.errors.as_text())
+
+            return render(self.request, self.template_name, context={'form': form, 'has_applied': self.has_applied()})
+
+    def get_success_url(self):
+        return reverse("auth:manage_clearance")
+
+
+class ClearanceApplicationView(LoginRequiredMixin, SuccessMessageMixin, ListView):
+    template_name = "backend/office/manage_office.html"
+    model = None
+    queryset = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = self.form
+        return context
+
+
+    def get_queryset(self):
+        office_type = None
+        try:
+            profile = AdministrativeProfile.objects.get(
+                user=User.objects.get(username=self.request.user))
+            office_type = profile.office.office_title
+        except AdministrativeProfile.DoesNotExist:
+            pass
+
+        except User.DoesNotExist:
+            pass
+
+        finally:
+            if office_type != None:
+
+                if office_type == 'Library':
+                    # get library student
+
+                    self.form = LibraryClearanceForm
+
+                    # Retrieve library clearances that are not cleared and not disapproved
+                    queryset = LibraryClearance.objects.filter(is_cleared=False, is_disapprove=False)
+
+                    # Filter by student clearance with hostel clearance cleared
+                    queryset = queryset.filter(clearance__hostel_clearance__is_cleared=False, clearance__sport_clearance__is_cleared=False, clearance__internal_audit_clearance__is_cleared=False, clearance__departmental_clearance__is_cleared=False)
+                    return queryset
+
+            else:
+                # Failed in getting office type
+                pass
+
+
+
+        return None

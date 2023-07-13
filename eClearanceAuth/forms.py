@@ -267,3 +267,101 @@ class EditAdministrativeProfileForm(CreateAdministrativeProfileForm):
     class Meta:
         model = User
         fields = ('username', 'name', 'passport')
+
+
+class ClearanceForm(forms.ModelForm):
+
+    departmental_clearance_one = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    departmental_clearance_two = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    school_fee_receipt_one = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    school_fee_receipt_two = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    school_id_card = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    remita_one = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    remita_two = forms.ImageField(widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+    class Meta:
+        model = InternalAuditClearance
+        fields = ('departmental_clearance_one', 'departmental_clearance_two', 'school_fee_receipt_one', 'school_fee_receipt_two', 'school_id_card', 'remita_one', 'remita_two')
+
+class LibraryClearanceForm(forms.ModelForm):
+
+    number_of_book_owe_departmental = forms.CharField(help_text='Enter numbers of books owed at departmental level', widget=forms.TextInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter numbers of books',
+        }
+    ))
+
+    cost_of_book_owe_departmental = forms.CharField(help_text='Enter cost of books owed at departmental level', widget=forms.TextInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter cost of books',
+        }
+    ))
+
+    number_of_book_owe_main = forms.CharField(help_text='Enter numbers of books owed at main library', widget=forms.TextInput(
+        attrs={
+            'placeholder': 'Enter numbers of books',
+            'class': 'form-control',
+        }
+    ))
+
+    cost_of_book_owe_main = forms.CharField(help_text='Enter cost of books owed at main library', widget=forms.TextInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter cost of books',
+        }
+    ))
+
+
+    class Meta:
+        model = LibraryClearance
+        fields = ('number_of_book_owe_departmental', 'cost_of_book_owe_departmental', 'number_of_book_owe_main', 'cost_of_book_owe_main')

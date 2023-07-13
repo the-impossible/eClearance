@@ -21,4 +21,8 @@ urlpatterns = [
     path('manage_offices', ManageOfficeView.as_view(), name="manage_offices"),
     path('update_office/<str:pk>', UpdateAdministrativeOfficeView.as_view(), name="update_office"),
     path('delete_office/<str:pk>', DeleteAdministrativeOfficeView.as_view(), name="delete_office"),
+
+    #Student-------> clearance
+    path('manage_clearance', ApplyClearanceView.as_view(), name="manage_clearance"),
+    path('clearance_application', ClearanceApplicationView.as_view(), name="clearance_application"),
 ]

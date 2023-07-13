@@ -211,22 +211,22 @@ class StudentClearance(models.Model):
         default=uuid.uuid4, primary_key=True, unique=True, editable=False)
 
     student = models.OneToOneField(
-        to="StudentProfile", on_delete=models.CASCADE, blank=True)
+        to="StudentProfile", on_delete=models.CASCADE, blank=True, null=True)
 
     hostel_clearance = models.OneToOneField(
-        to="HostelClearance", on_delete=models.CASCADE, blank=True)
+        to="HostelClearance", on_delete=models.CASCADE, blank=True, null=True)
 
     library_clearance = models.OneToOneField(
-        to="LibraryClearance", on_delete=models.CASCADE, blank=True)
+        to="LibraryClearance", on_delete=models.CASCADE, blank=True, null=True)
 
     sport_clearance = models.OneToOneField(
-        to="SportClearance", on_delete=models.CASCADE, blank=True)
+        to="SportClearance", on_delete=models.CASCADE, blank=True, null=True)
 
     internal_audit_clearance = models.OneToOneField(
-        to="InternalAuditClearance", on_delete=models.CASCADE, blank=True)
+        to="InternalAuditClearance", on_delete=models.CASCADE, blank=True, null=True)
 
     departmental_clearance = models.OneToOneField(
-        to="DepartmentalClearance", on_delete=models.CASCADE, blank=True)
+        to="DepartmentalClearance", on_delete=models.CASCADE, blank=True, null=True)
 
     date_applied = models.DateTimeField(auto_now=True)
 
@@ -250,7 +250,16 @@ class LibraryClearance(models.Model):
         default=0, blank=True, null=True)
     cost_of_book_owe_main = models.FloatField(blank=True, null=True)
 
+    clearance = models.OneToOneField(
+        to="StudentClearance", on_delete=models.CASCADE, blank=True, null=True)
+
+    cleared_by = models.ForeignKey(
+        to="AdministrativeProfile", on_delete=models.CASCADE, blank=True, null=True)
+
+    date_cleared = models.DateTimeField(auto_now=True)
+
     is_cleared = models.BooleanField(default=False)
+    is_disapprove = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Library Clearance Status : {self.is_cleared}"
@@ -267,7 +276,16 @@ class SportClearance(models.Model):
         default=0, blank=True, null=True)
     cost_of_sport_items_owed = models.FloatField(blank=True, null=True)
 
+    cleared_by = models.ForeignKey(
+        to="AdministrativeProfile", on_delete=models.CASCADE, blank=True, null=True)
+
+    clearance = models.OneToOneField(
+        to="StudentClearance", on_delete=models.CASCADE, blank=True, null=True)
+
+    date_cleared = models.DateTimeField(auto_now=True)
+
     is_cleared = models.BooleanField(default=False)
+    is_disapprove = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Sport Clearance Status : {self.is_cleared}"
@@ -283,7 +301,16 @@ class HostelClearance(models.Model):
         default=0, blank=True, null=True)
     cost_of_hostel_items_owed = models.FloatField(blank=True, null=True)
 
+    cleared_by = models.ForeignKey(
+        to="AdministrativeProfile", on_delete=models.CASCADE, blank=True, null=True)
+
+    clearance = models.OneToOneField(
+        to="StudentClearance", on_delete=models.CASCADE, blank=True, null=True)
+
+    date_cleared = models.DateTimeField(auto_now=True)
+
     is_cleared = models.BooleanField(default=False)
+    is_disapprove = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Hostel Clearance Status : {self.is_cleared}"
@@ -312,8 +339,16 @@ class InternalAuditClearance(models.Model):
     remita_two = models.ImageField(upload_to='uploads/clearance/', null=True)
 
     disapproval_reason = models.TextField(blank=True, null=True)
+    clearance = models.OneToOneField(
+        to="StudentClearance", on_delete=models.CASCADE, blank=True, null=True)
+
+    cleared_by = models.ForeignKey(
+        to="AdministrativeProfile", on_delete=models.CASCADE, blank=True, null=True)
+
+    date_cleared = models.DateTimeField(auto_now=True)
 
     is_cleared = models.BooleanField(default=False)
+    is_disapprove = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Internal Audit Clearance Status : {self.is_cleared}"
@@ -327,7 +362,16 @@ class DepartmentalClearance(models.Model):
 
     disapproval_reason = models.TextField(blank=True, null=True)
 
+    cleared_by = models.ForeignKey(
+        to="AdministrativeProfile", on_delete=models.CASCADE, blank=True, null=True)
+
+    date_cleared = models.DateTimeField(auto_now=True)
+
     is_cleared = models.BooleanField(default=False)
+    is_disapprove = models.BooleanField(default=False)
+
+    clearance = models.OneToOneField(
+        to="StudentClearance", on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"Departmental Clearance Status : {self.is_cleared}"

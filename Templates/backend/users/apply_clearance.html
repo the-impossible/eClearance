@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Apply Clearance {% endblock title %}
+
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    {% block nav %}{% include 'partials/auth_nav.html' %}{% endblock nav %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      {% include 'partials/auth_sidebar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include "partials/messages.html" %}
+
+          <div class="row">
+            <div class="col.lg-12 grid-margin">
+
+            </div>
+          </div>
+
+          <div class="row">
+
+
+            {% if not has_applied %}
+
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Clearance Requirements</h4>
+                  <p class="card-description">
+                    adhere to the requirements <code>carefully</code> clearance process is from the
+                  </p>
+                  <p class="text-danger"><b>Library office</b> > <b>Hostel office</b> > <b>Sport office</b> > <b>Internal Audit</b> > <b>Departmental offices</b></p>
+                  <p>Ensure you have:</p>
+                  <ol>
+                    <li>Updated your profile passport </li>
+                    <li>Your (ND/HND) department clearance Year 1 & 2</li>
+                    <li>Your School Fees Receipt for Year 1 & 2</li>
+                    <li>Your Remita of School Fees Receipt for Year 1 & 2</li>
+                    <li>Your School ID card</li>
+                  </ol>
+
+                  <p>if you have the above click the button below to start clearance process</p>
+
+                  <button type="button" class="btn rounded-pill btn-primary" data-toggle="modal"
+                  data-target="#single">
+                    <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Start Your Clearance
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% else %}
+
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Clearance Progress</h4>
+                  <p class="card-description">
+                    view the progress of your <code>clearance</code> application
+                  </p>
+                  <p>Your clearance is currently at the: </p>
+                  <p class="text-danger"><b>Library office</b></p>
+
+                  <div class="row mt-3">
+                    <div class="col-sm-12 col-md-3">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h4 class="card-title">Library Office</h4>
+                          <img src="{% static 'img/pending.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">pending approval</h6>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        {% block footer %}{% include 'partials/auth_footer.html' %}{% endblock footer %}
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+    <!-- Modal Student -->
+    <div class="modal fade" id="single" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Begin Clearance</h5>
+            <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+            </button>
+          </div>
+          <form method="POST" enctype="multipart/form-data">
+            <div class="modal-body">
+              Fill the form below to begin the clearance<code>process</code>
+              {{ form|crispy }}
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                {% csrf_token %}
+              <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+{% include 'partials/modal_logout.html' %}
+{% block script %}{% include 'partials/auth_script.html' %}{% endblock script %}
+
+{% endblock body %}
