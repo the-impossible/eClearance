@@ -23,42 +23,85 @@
             </div>
           </div>
           <div class="row mt-3">
+
+            {% if request.user.user_type.user_type == "Admin" %}
+
             <div class="col-sm-12 col-md-3">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Customers</h4>
-                  <p>23% increase in conversion</p>
-                  <h4 class="text-dark font-weight-bold">43,981</h4>
+                  <h4 class="card-title">Students</h4>
+                  <p>Total number of students</p>
+                  <h4 class="text-dark font-weight-bold">{{student}}</h4>
                 </div>
               </div>
             </div>
             <div class="col-sm-12 col-md-3">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Customers</h4>
-                  <p>23% increase in conversion</p>
-                  <h4 class="text-dark font-weight-bold">43,981</h4>
+                  <h4 class="card-title">Office</h4>
+                  <p>Total registered office users</p>
+                  <h4 class="text-dark font-weight-bold">{{office}}</h4>
                 </div>
               </div>
             </div>
             <div class="col-sm-12 col-md-3">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Customers</h4>
-                  <p>23% increase in conversion</p>
-                  <h4 class="text-dark font-weight-bold">43,981</h4>
+                  <h4 class="card-title">Clearance</h4>
+                  <p>Total completed clearance</p>
+                  <h4 class="text-dark font-weight-bold">{{completed}}</h4>
                 </div>
               </div>
             </div>
             <div class="col-sm-12 col-md-3">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Customers</h4>
-                  <p>23% increase in conversion</p>
-                  <h4 class="text-dark font-weight-bold">43,981</h4>
+                  <h4 class="card-title">Clearance</h4>
+                  <p>Total applied clearance</p>
+                  <h4 class="text-dark font-weight-bold">{{applied}}</h4>
                 </div>
               </div>
             </div>
+            {% elif request.user.user_type.user_type == "Office" %}
+            <div class="col-sm-12 col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Approved</h4>
+                  <p>Total clearance approved</p>
+                  <h4 class="text-dark font-weight-bold">{{approve}}</h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Disapprove</h4>
+                  <p>Total clearance disapproved</p>
+                  <h4 class="text-dark font-weight-bold">{{disapprove}}</h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Clearance</h4>
+                  <p>Total clearance applied</p>
+                  <h4 class="text-dark font-weight-bold">{{applied}}</h4>
+                </div>
+              </div>
+            </div>
+            {% elif request.user.user_type.user_type == "Student" %}
+            <div class="col-sm-12 col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Status</h4>
+                  <p>Status of clearance</p>
+                  <h4 class="text-dark font-weight-bold">{{status}}</h4>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
           </div>
         </div>
         <!-- content-wrapper ends -->

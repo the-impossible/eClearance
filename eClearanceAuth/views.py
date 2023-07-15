@@ -27,6 +27,62 @@ class HomePageView(TemplateView):
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "backend/dashboard.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.user_type.user_type == "Admin":
+            context["student"] = User.objects.filter(user_type=UserType.objects.get(user_type='Student')).count()
+            context["office"] = User.objects.filter(user_type=UserType.objects.get(user_type='Office')).count()
+            context["completed"] = DepartmentalClearance.objects.filter(is_cleared=True).count()
+            context["applied"] = StudentClearance.objects.all().count()
+        elif self.request.user.user_type.user_type == "Office":
+            try:
+                profile = AdministrativeProfile.objects.get(
+                user=User.objects.get(username=self.request.user))
+                office_type = profile.office.office_title
+
+                if office_type == 'Library':
+                    context["approve"] = LibraryClearance.objects.filter(is_cleared=True).count()
+                    context["disapprove"] = LibraryClearance.objects.filter(is_disapprove=True).count()
+                    context["applied"] = LibraryClearance.objects.all().count()
+                elif office_type == 'Hostel':
+                    context["approve"] = HostelClearance.objects.filter(is_cleared=True).count()
+                    context["disapprove"] = HostelClearance.objects.filter(is_disapprove=True).count()
+                    context["applied"] = HostelClearance.objects.all().count()
+                elif office_type == 'Sport':
+                    context["approve"] = SportClearance.objects.filter(is_cleared=True).count()
+                    context["disapprove"] = SportClearance.objects.filter(is_disapprove=True).count()
+                    context["applied"] = SportClearance.objects.all().count()
+                elif office_type == 'Internal Audit':
+                    context["approve"] = InternalAuditClearance.objects.filter(is_cleared=True).count()
+                    context["disapprove"] = InternalAuditClearance.objects.filter(is_disapprove=True).count()
+                    context["applied"] = InternalAuditClearance.objects.all().count()
+                elif office_type == 'Department':
+                    context["approve"] = DepartmentalClearance.objects.filter(is_cleared=True).count()
+                    context["disapprove"] = DepartmentalClearance.objects.filter(is_disapprove=True).count()
+                    context["applied"] = DepartmentalClearance.objects.all().count()
+
+            except AdministrativeProfile.DoesNotExist:
+                return None
+
+            except User.DoesNotExist:
+                return None
+
+        elif self.request.user.user_type.user_type == "Student":
+            student_clearance = StudentClearance.objects.filter(
+            student=StudentProfile.objects.get(user=self.request.user))
+
+            if student_clearance:
+                if student_clearance[0].departmental_clearance.is_cleared:
+                    context["status"] = "Completed"
+                else:
+                    context["status"] = "In progress"
+
+            else:
+                context["status"] = "Has not applied"
+
+        return context
+
+
 
 class LogoutView(LoginRequiredMixin, View):
 
