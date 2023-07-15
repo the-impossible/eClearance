@@ -26,7 +26,7 @@
                   <h4 class="card-title">Manage Clearance</h4>
 
                   <p class="card-description">
-                    Use the table below to <code>clear</code> students on their Library clearance application
+                    Use the table below to <code>clear</code> students on their {{office}} clearance application
                   </p>
                   <div class="table-responsive">
                     <table class="table table-hover">
@@ -58,8 +58,7 @@
                               <td><label class="badge badge-danger">{{object.clearance.student.session}}</label></td>
                               <td class="text-success"> {{object.clearance.student.programme}} </td>
                               <td><button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
-                                data-target="#approve">
-                                  <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; Clear
+                                data-target="#approve">Clear Student
                                 </button></td>
                             </tr>
                               <!-- Modal Student -->
@@ -91,10 +90,24 @@
                                                   {% csrf_token %}
                                                   <b>NB: This process is non-reversal</b>
                                                   <p>Ensure the student meets <code>approval</code> requirements</p>
-                                                  <p>You are about to approve <b>{{object.clearance.student.user.name|upper}}</b> with registration number of <b>{{object.clearance.student.user.username}}</b></p>
 
-                                                  <button class="btn btn-success btn-lg" type="submit" name="disapprove"
-                                                  data-dismiss="modal">Approve</button>
+                                                  {% if office == 'Internal Audit' %}
+                                                  <div class="parent-container">
+                                                    <a id="viewFile" href="{{ object.departmental_clearance_one.url }}" class="btn btn-success btn-sm text-center" title="Departmental clearance year 1">View Uploaded files</a>
+                                                    <br>
+                                                    <br>
+                                                    <a href="{{ object.departmental_clearance_two.url }}" title="Departmental clearance year 2"></a>
+                                                    <a href="{{ object.school_fee_receipt_one.url }}" title="School fees receipt year 1"></a>
+                                                    <a href="{{ object.school_fee_receipt_two.url }}" title="School fees receipt year 2"></a>
+                                                    <a href="{{ object.school_id_card.url }}" title="School ID card"></a>
+                                                    <a href="{{ object.remita_one.url }}" title="Remita One"></a>
+                                                    <a href="{{ object.remita_two.url }}" title="Remita Two"></a>
+                                                  </div>
+                                                  {% endif %}
+
+                                                  <p> Click the button below to approve <b>{{object.clearance.student.user.name|upper}}</b> with registration number of <b>{{object.clearance.student.user.username}}</b> clearance application</p>
+                                                  <input type="hidden" name="clearance_id" value="{{object.pk}}">
+                                                  <button class="btn btn-success btn-sm" name="approve" type="submit">Approve</button>
                                                 </form>
                                               </div>
                                             </div>
@@ -111,12 +124,13 @@
                                               <div class="card-body">
                                                 <form method="POST">
                                                   <b>NB: This process is non-reversal</b>
-                                                  <p>Ensure the student doesn't meet <code>approval</code> requirements</p>
+                                                  <p>Filling the form below means the student doesn't meet <code>approval</code> requirements</p>
                                                   {% csrf_token %}
+                                                  <input type="hidden" name="clearance_id" value="{{object.pk}}">
                                                   {{ form|crispy }}
-                                                  <button class="btn btn-success btn-lg" type="submit" name="disapprove" data-dismiss="modal">Disapprove</button>
-                                                </form>
-                                              </div>
+                                                  <button class="btn btn-success btn-lg" type="submit" name="disapprove">Disapprove</button>
+                                                </div>
+                                              </form>
                                             </div>
                                           </div>
                                         </div>
@@ -136,7 +150,7 @@
                             <div class="jumbotron text-center p-5">
                               <!-- illustration can be used here too -->
                               <p style="font-size: 4em;">📂</p> <br> <br>
-                              <p style="font-size: 1.5em;">No Library Clearance Record!</p>
+                              <p style="font-size: 1.5em;">No {{office}} Clearance Record!</p>
                             </div>
                           </td>
                         </tr>

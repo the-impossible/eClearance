@@ -244,11 +244,12 @@ class LibraryClearance(models.Model):
 
     number_of_book_owe_departmental = models.IntegerField(
         default=0, blank=True, null=True)
-    cost_of_book_owe_departmental = models.FloatField(blank=True, null=True)
+    cost_of_book_owe_departmental = models.FloatField(
+        blank=True, null=True, default=0)
 
     number_of_book_owe_main = models.IntegerField(
         default=0, blank=True, null=True)
-    cost_of_book_owe_main = models.FloatField(blank=True, null=True)
+    cost_of_book_owe_main = models.FloatField(blank=True, null=True, default=0)
 
     clearance = models.OneToOneField(
         to="StudentClearance", on_delete=models.CASCADE, blank=True, null=True)
@@ -271,7 +272,6 @@ class LibraryClearance(models.Model):
 
 class SportClearance(models.Model):
 
-    sport_items_owed = models.CharField(max_length=200, blank=True, null=True)
     number_sport_items_owed = models.IntegerField(
         default=0, blank=True, null=True)
     cost_of_sport_items_owed = models.FloatField(blank=True, null=True)
@@ -364,6 +364,9 @@ class DepartmentalClearance(models.Model):
 
     cleared_by = models.ForeignKey(
         to="AdministrativeProfile", on_delete=models.CASCADE, blank=True, null=True)
+
+    department = models.ForeignKey(
+        to="Department", on_delete=models.CASCADE, blank=True, null=True)
 
     date_cleared = models.DateTimeField(auto_now=True)
 

@@ -18,3 +18,41 @@
   <script src="{% static 'backend/js/dashboard.js' %}"></script>
   <script src="{% static 'backend/js/close.js' %}"></script>
   <!-- End custom js for this page-->
+
+  <!-- jQuery 1.7.2+ or Zepto.js 1.0+ -->
+  <script src="{% static 'backend/dist/jquery.min.js' %}"></script>
+  <!-- Magnific Popup core JS file -->
+  <script src="{% static 'backend/dist/jquery.magnific-popup.js' %}"></script>
+
+  <script>
+    var modal = document.getElementById('approve');
+    document.getElementById("viewFile").addEventListener('click', () =>{
+      // Hide the modal by removing the 'show' class
+      modal.classList.remove('show');
+      // Hide the modal backdrop by removing the 'show' class
+      var modalBackdrop = document.querySelector('.modal-backdrop');
+      modalBackdrop.classList.remove('show');
+
+    });
+
+    $(document).ready(function() {
+      $('.parent-container').magnificPopup({
+          delegate: 'a',
+          type: 'image',
+          tLoading: 'Loading image #%curr%...',
+          mainClass: 'mfp-img-mobile',
+          gallery: {
+              enabled: true,
+              navigateByImgClick: true,
+              preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+          },
+          image: {
+              tError: '<a href="%url%">The image #%curr%</a> could not be loaded.',
+              titleSrc: function(item) {
+                  return item.el.attr('title');
+              }
+          }
+      });
+});
+
+  </script>

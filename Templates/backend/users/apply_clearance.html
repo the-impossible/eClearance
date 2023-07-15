@@ -65,19 +65,294 @@
                   <p class="card-description">
                     view the progress of your <code>clearance</code> application
                   </p>
-                  <p>Your clearance is currently at the: </p>
-                  <p class="text-danger"><b>Library office</b></p>
+
+
+                  <p>Your current completed clearance office is: </p>
+
+                  <p class="text-danger"><b>
+                    {% if clearance.departmental_clearance.is_cleared %}
+                    Clearance completed
+                  {% elif clearance.internal_audit_clearance.is_cleared %}
+                  Internal Audit Office
+                  {% elif clearance.sport_clearance.is_cleared %}
+                  Sport Office
+                  {% elif clearance.hostel_clearance.is_cleared %}
+                  Hostel Office
+                  {% else %}
+                  Library Office
+                  {% endif %}</b></p>
 
                   <div class="row mt-3">
+
                     <div class="col-sm-12 col-md-3">
                       <div class="card">
                         <div class="card-body text-center">
-                          <h4 class="card-title">Library Office</h4>
+                          <h4 class="card-title">Library Office </h4>
+                          {% if clearance.library_clearance.is_cleared %}
+                          <img src="{% static 'img/approval.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">Approved</h6>
+                          {% elif clearance.library_clearance.is_disapprove %}
+                          <img src="{% static 'img/cancel.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">disapproved</h6>
+                          <button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
+                                data-target="#approve">View Reason
+                          </button>
+                          <!-- Modal Student -->
+                          <div class="modal fade" id="approve" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Reason for disapproval</h5>
+                                  <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    reasons for <code>disapproval</code> is highlighted below
+                                    <br>
+                                    <br>
+                                    <p class="text-left">You are <code>owing</code> the school the following items:</p>
+
+                                    <ol class="text-left">
+
+                                      {% if clearance.library_clearance.number_of_book_owe_departmental %}
+
+                                      <li class="text-left">Number of books owed at the departmental library: &nbsp;&nbsp;&nbsp; <b>{{clearance.library_clearance.number_of_book_owe_departmental}}</b> </li>
+                                      <li class="text-left">Cost of books owed at the departmental library: &nbsp;&nbsp;&nbsp;<b>₦{{clearance.library_clearance.cost_of_book_owe_departmental}}</b> </li>
+                                      {% endif %}
+
+                                      {% if clearance.library_clearance.number_of_book_owe_main %}
+
+                                      <li class="text-left">Number of books owed at the main library: &nbsp;&nbsp;&nbsp;<b>{{clearance.library_clearance.number_of_book_owe_main}}</b> </li>
+                                      <li class="text-left">Cost of books owed at the main library: &nbsp;&nbsp;&nbsp;<b>₦{{clearance.library_clearance.cost_of_book_owe_main}}</b> </li>
+                                      {% endif %}
+
+                                    </ol>
+                                    <b class="text-left">NB: Kindly visit the school <code>library</code> for rectification, clearance has been precluded from other offices</b>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
                           <img src="{% static 'img/pending.png' %}" alt="" width="100">
                           <h6 class="text-dark font-weight-bold">pending approval</h6>
+                          {% endif %}
                         </div>
                       </div>
                     </div>
+
+
+                    {% if clearance.library_clearance.is_cleared %}
+
+                    <div class="col-sm-12 col-md-3">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h4 class="card-title">Hostel Office </h4>
+                          {% if clearance.hostel_clearance.is_cleared %}
+                          <img src="{% static 'img/approval.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">Approved</h6>
+                          {% elif clearance.hostel_clearance.is_disapprove %}
+                          <img src="{% static 'img/cancel.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">disapproved</h6>
+                          <button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
+                                data-target="#hostel">View Reason
+                          </button>
+                          <!-- Modal Student -->
+                          <div class="modal fade" id="hostel" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Reason for disapproval</h5>
+                                  <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    reasons for <code>disapproval</code> is highlighted below
+                                    <br>
+                                    <br>
+                                    <p class="text-left">You are <code>owing</code> the hostel the following items:</p>
+
+                                    <ol class="text-left">
+
+                                      <li class="text-left">Number of hostel items owed: &nbsp;&nbsp;&nbsp; <b>{{clearance.hostel_clearance.number_of_hostel_items_owed}}</b> </li>
+                                      <li class="text-left">Cost of hostel items owed: &nbsp;&nbsp;&nbsp;<b>₦{{clearance.hostel_clearance.cost_of_hostel_items_owed}}</b> </li>
+
+                                    </ol>
+                                    <b class="text-left">NB: Kindly visit the school <code>hostel</code> for rectification, clearance has been precluded from other offices</b>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
+                          <img src="{% static 'img/pending.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">pending approval</h6>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endif %}
+
+                    {% if clearance.hostel_clearance.is_cleared %}
+
+                    <div class="col-sm-12 col-md-3">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h4 class="card-title">Sport Office </h4>
+                          {% if clearance.sport_clearance.is_cleared %}
+                          <img src="{% static 'img/approval.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">Approved</h6>
+                          {% elif clearance.sport_clearance.is_disapprove %}
+                          <img src="{% static 'img/cancel.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">disapproved</h6>
+                          <button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
+                                data-target="#hostel">View Reason
+                          </button>
+                          <!-- Modal Student -->
+                          <div class="modal fade" id="hostel" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Reason for disapproval</h5>
+                                  <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    reasons for <code>disapproval</code> is highlighted below
+                                    <br>
+                                    <br>
+                                    <p class="text-left">You are <code>owing</code> the sport office the following items:</p>
+
+                                    <ol class="text-left">
+
+                                      <li class="text-left">Number of sport items owed: &nbsp;&nbsp;&nbsp; <b>{{clearance.sport_clearance.number_sport_items_owed}}</b> </li>
+                                      <li class="text-left">Cost of sport items owed: &nbsp;&nbsp;&nbsp;<b>₦{{clearance.sport_clearance.cost_of_sport_items_owed}}</b> </li>
+
+                                    </ol>
+                                    <b class="text-left">NB: Kindly visit the school <code>sport </code>office for rectification, clearance has been precluded from other offices</b>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
+                          <img src="{% static 'img/pending.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">pending approval</h6>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endif %}
+
+                    {% if clearance.sport_clearance.is_cleared %}
+
+                    <div class="col-sm-12 col-md-3">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h4 class="card-title">Inter Audit Office </h4>
+                          {% if clearance.internal_audit_clearance.is_cleared %}
+                          <img src="{% static 'img/approval.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">Approved</h6>
+                          {% elif clearance.internal_audit_clearance.is_disapprove %}
+                          <img src="{% static 'img/cancel.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">disapproved</h6>
+                          <button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
+                                data-target="#internal">View Reason
+                          </button>
+                          <!-- Modal Student -->
+                          <div class="modal fade" id="internal" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Reason for disapproval</h5>
+                                  <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body text-left">
+                                    reasons for <code>disapproval</code> is highlighted below
+                                    <br>
+                                    <br>
+                                    <p class="text-left"><b >{{clearance.internal_audit_clearance.disapproval_reason}}</b></p>
+
+                                    <p class="text-left">Kindly re-upload all <code>document</code> using the form below</p>
+                                    <form action="" method="post" enctype="multipart/form-data">
+                                      {% csrf_token %}
+                                      {{ form|crispy }}
+                                      <button type="submit" name="re-upload" class="btn btn-success">Submit</button>
+                                    </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
+                          <img src="{% static 'img/pending.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">pending approval</h6>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endif %}
+
+                    {% if clearance.internal_audit_clearance.is_cleared %}
+
+                    <div class="col-sm-12 col-md-3 mt-3">
+                      <div class="card">
+                        <div class="card-body text-center">
+                          <h4 class="card-title">Departmental Office </h4>
+                          {% if clearance.departmental_clearance.is_cleared %}
+                          <img src="{% static 'img/approval.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">Approved</h6>
+                          {% elif clearance.departmental_clearance.is_disapprove %}
+                          <img src="{% static 'img/cancel.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">disapproved</h6>
+                          <button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
+                                data-target="#department">View Reason
+                          </button>
+                          <!-- Modal Student -->
+                          <div class="modal fade" id="department" style="display: none;" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Reason for disapproval</h5>
+                                  <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    reasons for <code>disapproval</code> is highlighted below
+                                    <br>
+                                    <br>
+                                    <p class="text-left">{{clearance.departmental_clearance.disapproval_reason}}</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
+                          <img src="{% static 'img/pending.png' %}" alt="" width="100">
+                          <h6 class="text-dark font-weight-bold">pending approval</h6>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endif %}
+
+
+
 
                   </div>
 

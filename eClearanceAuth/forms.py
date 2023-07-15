@@ -329,39 +329,179 @@ class ClearanceForm(forms.ModelForm):
 
     class Meta:
         model = InternalAuditClearance
-        fields = ('departmental_clearance_one', 'departmental_clearance_two', 'school_fee_receipt_one', 'school_fee_receipt_two', 'school_id_card', 'remita_one', 'remita_two')
+        fields = ('departmental_clearance_one', 'departmental_clearance_two', 'school_fee_receipt_one',
+                  'school_fee_receipt_two', 'school_id_card', 'remita_one', 'remita_two')
+
 
 class LibraryClearanceForm(forms.ModelForm):
 
-    number_of_book_owe_departmental = forms.CharField(help_text='Enter numbers of books owed at departmental level', widget=forms.TextInput(
+    number_of_book_owe_departmental = forms.IntegerField(required=False, help_text='Enter numbers of books owed at departmental level', widget=forms.NumberInput(
         attrs={
             'class': 'form-control',
             'placeholder': 'Enter numbers of books',
         }
     ))
 
-    cost_of_book_owe_departmental = forms.CharField(help_text='Enter cost of books owed at departmental level', widget=forms.TextInput(
+    cost_of_book_owe_departmental = forms.FloatField(required=False, help_text='Enter cost of books owed at departmental level', widget=forms.NumberInput(
         attrs={
             'class': 'form-control',
             'placeholder': 'Enter cost of books',
         }
     ))
 
-    number_of_book_owe_main = forms.CharField(help_text='Enter numbers of books owed at main library', widget=forms.TextInput(
+    number_of_book_owe_main = forms.IntegerField(required=False, help_text='Enter numbers of books owed at main library', widget=forms.NumberInput(
         attrs={
             'placeholder': 'Enter numbers of books',
             'class': 'form-control',
         }
     ))
 
-    cost_of_book_owe_main = forms.CharField(help_text='Enter cost of books owed at main library', widget=forms.TextInput(
+    cost_of_book_owe_main = forms.FloatField(required=False, help_text='Enter cost of books owed at main library', widget=forms.NumberInput(
         attrs={
             'class': 'form-control',
             'placeholder': 'Enter cost of books',
         }
     ))
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+        book_dept = cleaned_data.get('number_of_book_owe_departmental')
+        cost_dept = cleaned_data.get('cost_of_book_owe_departmental')
+        book_main = cleaned_data.get('number_of_book_owe_main')
+        cost_main = cleaned_data.get('cost_of_book_owe_main')
+
+        if not book_dept and not cost_dept and not book_main and not cost_main:
+            raise forms.ValidationError("Reason must be provided")
+
+        if book_dept and not cost_dept:
+            raise forms.ValidationError("enter cost of book owed at departmental library")
+
+        if cost_dept and not book_dept:
+            raise forms.ValidationError("enter number of books owed at departmental library")
+
+        if book_main and not cost_main:
+            raise forms.ValidationError("enter cost of book owed at owed at main library")
+
+        if cost_main and not book_main:
+            raise forms.ValidationError("enter number of books owed at owed at main library")
+
+        return cleaned_data
 
 
     class Meta:
         model = LibraryClearance
-        fields = ('number_of_book_owe_departmental', 'cost_of_book_owe_departmental', 'number_of_book_owe_main', 'cost_of_book_owe_main')
+        fields = ('number_of_book_owe_departmental', 'cost_of_book_owe_departmental',
+                  'number_of_book_owe_main', 'cost_of_book_owe_main')
+
+class HostelClearanceForm(forms.ModelForm):
+
+    number_of_hostel_items_owed = forms.IntegerField(help_text='Enter numbers of hostel items owed', widget=forms.NumberInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter numbers of hostel items',
+        }
+    ))
+
+    cost_of_hostel_items_owed = forms.FloatField(help_text='Enter cost of hostel items owed', widget=forms.NumberInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter number of hostel items',
+        }
+    ))
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+        item_hostel = cleaned_data.get('number_of_hostel_items_owed')
+        cost_hostel = cleaned_data.get('cost_of_hostel_items_owed')
+
+        if not item_hostel and not cost_hostel:
+            raise forms.ValidationError("Reason must be provided")
+
+        return cleaned_data
+
+
+    class Meta:
+        model = HostelClearance
+        fields = ('number_of_hostel_items_owed', 'cost_of_hostel_items_owed')
+
+class SportClearanceForm(forms.ModelForm):
+
+    number_sport_items_owed = forms.IntegerField(help_text='Enter numbers of sport items owed', widget=forms.NumberInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter numbers of sport items',
+        }
+    ))
+
+    cost_of_sport_items_owed = forms.FloatField(help_text='Enter cost of sport items owed', widget=forms.NumberInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter number of sport items',
+        }
+    ))
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+        item_sport = cleaned_data.get('number_sport_items_owed')
+        cost_sport = cleaned_data.get('cost_of_sport_items_owed')
+
+        if not item_sport and not cost_sport:
+            raise forms.ValidationError("Reason must be provided")
+
+        return cleaned_data
+
+
+    class Meta:
+        model = SportClearance
+        fields = ('number_sport_items_owed', 'cost_of_sport_items_owed')
+
+class InternalClearanceForm(forms.ModelForm):
+
+    disapproval_reason = forms.CharField(help_text='Enter reason for disapproval', widget=forms.Textarea(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter reason for disapproval',
+        }
+    ))
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+        disapproval_reason = cleaned_data.get('disapproval_reason')
+
+        if not disapproval_reason:
+            raise forms.ValidationError("Reason must be provided")
+
+        return cleaned_data
+
+
+    class Meta:
+        model = InternalAuditClearance
+        fields = ('disapproval_reason',)
+
+class DepartmentClearanceForm(forms.ModelForm):
+
+    disapproval_reason = forms.CharField(help_text='Enter reason for disapproval', widget=forms.Textarea(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter reason for disapproval',
+        }
+    ))
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+        disapproval_reason = cleaned_data.get('disapproval_reason')
+
+        if not disapproval_reason:
+            raise forms.ValidationError("Reason must be provided")
+
+        return cleaned_data
+
+
+    class Meta:
+        model = DepartmentalClearance
+        fields = ('disapproval_reason',)
