@@ -20,6 +20,13 @@
           {% include "partials/messages.html" %}
           <div class="row">
 
+            <div class="col.lg-12 grid-margin">
+              <a href="{% url 'auth:disapproved_application' %}" class="btn rounded-pill btn-primary ml-4">
+                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; View disapproved application
+              </a>
+            </div>
+
+
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
@@ -58,11 +65,11 @@
                               <td><label class="badge badge-danger">{{object.clearance.student.session}}</label></td>
                               <td class="text-success"> {{object.clearance.student.programme}} </td>
                               <td><button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
-                                data-target="#approve">Clear Student
+                                data-target="#approve{{forloop.counter}}">Clear Student
                                 </button></td>
                             </tr>
                               <!-- Modal Student -->
-                              <div class="modal fade" id="approve" style="display: none;" aria-hidden="true">
+                              <div class="modal fade to_remove" id="approve{{forloop.counter}}" style="display: none;" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                   <div class="modal-content">
                                     <div class="modal-header">
@@ -92,8 +99,8 @@
                                                   <p>Ensure the student meets <code>approval</code> requirements</p>
 
                                                   {% if office == 'Internal Audit' %}
-                                                  <div class="parent-container">
-                                                    <a id="viewFile" href="{{ object.departmental_clearance_one.url }}" class="btn btn-success btn-sm text-center" title="Departmental clearance year 1">View Uploaded files</a>
+                                                  <div class="parent-container{{forloop.counter}}">
+                                                    <a id="viewFile" href="{{ object.departmental_clearance_one.url }}" class="btn btn-success btn-sm text-center viewFile" title="Departmental clearance year 1">View Uploaded files</a>
                                                     <br>
                                                     <br>
                                                     <a href="{{ object.departmental_clearance_two.url }}" title="Departmental clearance year 2"></a>
@@ -128,7 +135,7 @@
                                                   {% csrf_token %}
                                                   <input type="hidden" name="clearance_id" value="{{object.pk}}">
                                                   {{ form|crispy }}
-                                                  <button class="btn btn-success btn-lg" type="submit" name="disapprove">Disapprove</button>
+                                                  <button class="btn btn-success btn-lg btn-block" type="submit" name="disapprove">Disapprove</button>
                                                 </div>
                                               </form>
                                             </div>

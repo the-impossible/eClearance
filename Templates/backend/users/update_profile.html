@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Update Profile{% endblock title %}
+
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    {% block nav %}{% include 'partials/auth_nav.html' %}{% endblock nav %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      {% include 'partials/auth_sidebar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include "partials/messages.html" %}
+          <div class="row">
+
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Account Information</h4>
+                  <p class="card-description">
+                    view account information below
+                  </p>
+                  <div class="row">
+                    <div class="col-3">
+                      <img src="{{request.user.passport.url}}" width="200" alt="" srcset="">
+                    </div>
+                    <div class="col-7">
+                      <p><b>Name:</b> {{request.user.name}}</p>
+                      <p><b>Username/Reg No:</b> {{request.user.username}}</p>
+
+                      {% if student_profile.session%}
+                      <p><b>Session:</b> {{student_profile.session}}</p>
+                      <p><b>Programme:</b> {{student_profile.programme}}</p>
+
+                      {% endif %}
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Edit Account Information</h4>
+                  <p class="card-description">
+                    upload your passport photograph below
+                  </p>
+
+                  <form class="forms-sample" method="post"  enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{form|crispy}}
+                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Change Account Passowrd</h4>
+                  <p class="card-description">
+                   Fill the form below to change account password
+                  </p>
+                  {% include 'partials/messages.html' %}
+                    <form method="post" action="{% url 'auth:change_password' request.user.pk %}">
+                      {% csrf_token %}
+                      <div class="row mb-3">
+                        <label class="col-12 col-form-label" for="basic-icon-default-fullname">Current Password</label>
+                        <div class="col-12">
+                          <input class="form-control" required type="password" name="password0" placeholder="Current Password">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label class="col-12 col-form-label" for="basic-icon-default-fullname">New Password</label>
+                        <div class="col-12">
+                          <input class="form-control" required type="password" name="password1" placeholder="New Password">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label class="col-12 col-form-label" for="basic-icon-default-company">Re-Enter New Password</label>
+                        <div class="col-12">
+                          <input class="form-control" required type="password" name="password2" placeholder="Re-Enter New Password">
+                        </div>
+                      </div>
+                      <div class="row mb-3 ml-1">
+                        <button type="submit" class="btn btn-primary btn-md" name="password">Update Password</button>
+                      </div>
+                    </form>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        {% block footer %}{% include 'partials/auth_footer.html' %}{% endblock footer %}
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+{% include 'partials/modal_logout.html' %}
+{% block script %}{% include 'partials/auth_script.html' %}{% endblock script %}
+
+{% endblock body %}

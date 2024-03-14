@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
@@ -30,36 +30,57 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.user_type.user_type == "Admin":
-            context["student"] = User.objects.filter(user_type=UserType.objects.get(user_type='Student')).count()
-            context["office"] = User.objects.filter(user_type=UserType.objects.get(user_type='Office')).count()
-            context["completed"] = DepartmentalClearance.objects.filter(is_cleared=True).count()
+            context["student"] = User.objects.filter(
+                user_type=UserType.objects.get(user_type='Student')).count()
+            context["office"] = User.objects.filter(
+                user_type=UserType.objects.get(user_type='Office')).count()
+            context["completed"] = DepartmentalClearance.objects.filter(
+                is_cleared=True).count()
             context["applied"] = StudentClearance.objects.all().count()
         elif self.request.user.user_type.user_type == "Office":
             try:
                 profile = AdministrativeProfile.objects.get(
-                user=User.objects.get(username=self.request.user))
+                    user=User.objects.get(username=self.request.user))
                 office_type = profile.office.office_title
 
                 if office_type == 'Library':
-                    context["approve"] = LibraryClearance.objects.filter(is_cleared=True).count()
-                    context["disapprove"] = LibraryClearance.objects.filter(is_disapprove=True).count()
-                    context["applied"] = LibraryClearance.objects.all().count()
+                    context["approve"] = LibraryClearance.objects.filter(
+                        is_cleared=True).count()
+                    context["disapprove"] = LibraryClearance.objects.filter(
+                        is_disapprove=True).count()
+                    context["applied"] = context["approve"] + \
+                        context["disapprove"]
                 elif office_type == 'Hostel':
-                    context["approve"] = HostelClearance.objects.filter(is_cleared=True).count()
-                    context["disapprove"] = HostelClearance.objects.filter(is_disapprove=True).count()
-                    context["applied"] = HostelClearance.objects.all().count()
+                    context["approve"] = HostelClearance.objects.filter(
+                        is_cleared=True).count()
+                    context["disapprove"] = HostelClearance.objects.filter(
+                        is_disapprove=True).count()
+                    context["applied"] = context["approve"] + \
+                        context["disapprove"]
                 elif office_type == 'Sport':
-                    context["approve"] = SportClearance.objects.filter(is_cleared=True).count()
-                    context["disapprove"] = SportClearance.objects.filter(is_disapprove=True).count()
-                    context["applied"] = SportClearance.objects.all().count()
+                    context["approve"] = SportClearance.objects.filter(
+                        is_cleared=True).count()
+                    context["disapprove"] = SportClearance.objects.filter(
+                        is_disapprove=True).count()
+                    context["applied"] = context["approve"] + \
+                        context["disapprove"]
                 elif office_type == 'Internal Audit':
-                    context["approve"] = InternalAuditClearance.objects.filter(is_cleared=True).count()
-                    context["disapprove"] = InternalAuditClearance.objects.filter(is_disapprove=True).count()
-                    context["applied"] = InternalAuditClearance.objects.all().count()
+                    context["approve"] = InternalAuditClearance.objects.filter(
+                        is_cleared=True).count()
+                    context["disapprove"] = InternalAuditClearance.objects.filter(
+                        is_disapprove=True).count()
+                    context["applied"] = context["approve"] + \
+                        context["disapprove"]
                 elif office_type == 'Department':
-                    context["approve"] = DepartmentalClearance.objects.filter(is_cleared=True).count()
-                    context["disapprove"] = DepartmentalClearance.objects.filter(is_disapprove=True).count()
-                    context["applied"] = DepartmentalClearance.objects.all().count()
+
+                    department = AdministrativeProfile.objects.get(
+                        user=self.request.user).a_departmental_office
+                    context["approve"] = DepartmentalClearance.objects.filter(department=department,
+                                                                              is_cleared=True).count()
+                    context["disapprove"] = DepartmentalClearance.objects.filter(department=department,
+                                                                                 is_disapprove=True).count()
+                    context["applied"] = context["approve"] + \
+                        context["disapprove"]
 
             except AdministrativeProfile.DoesNotExist:
                 return None
@@ -69,7 +90,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         elif self.request.user.user_type.user_type == "Student":
             student_clearance = StudentClearance.objects.filter(
-            student=StudentProfile.objects.get(user=self.request.user))
+                student=StudentProfile.objects.get(user=self.request.user))
 
             if student_clearance:
                 if student_clearance[0].departmental_clearance.is_cleared:
@@ -81,7 +102,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 context["status"] = "Has not applied"
 
         return context
-
 
 
 class LogoutView(LoginRequiredMixin, View):
@@ -764,3 +784,296 @@ class ClearanceApplicationView(LoginRequiredMixin, SuccessMessageMixin, ListView
         else:
             # Failed in getting office type
             pass
+
+
+class DisapprovedApplicationView(LoginRequiredMixin, ListView):
+    template_name = "backend/office/disapproved.html"
+
+    def get_office_type(self):
+        try:
+            profile = AdministrativeProfile.objects.get(
+                user=User.objects.get(username=self.request.user))
+            office_type = profile.office.office_title
+            return office_type
+        except AdministrativeProfile.DoesNotExist:
+            return None
+
+        except User.DoesNotExist:
+            return None
+
+    def get_success_url(self):
+        return reverse("auth:disapproved_application")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["office"] = self.office
+        return context
+
+    def get_queryset(self):
+
+        office_type = self.get_office_type()
+        self.office = office_type
+
+        if office_type != None:
+            if office_type == 'Library':
+
+                # Retrieve library clearances that are disapproved
+                queryset = LibraryClearance.objects.filter(
+                    is_cleared=False, is_disapprove=True).order_by('-date_cleared')
+
+                # Filter by student clearance with hostel clearance cleared
+                queryset = queryset.filter(clearance__hostel_clearance__is_cleared=False, clearance__sport_clearance__is_cleared=False,
+                                           clearance__internal_audit_clearance__is_cleared=False, clearance__departmental_clearance__is_cleared=False)
+                return queryset
+
+            elif office_type == 'Hostel':
+
+                # Retrieve hostel clearances that are not cleared and not disapproved
+                queryset = HostelClearance.objects.filter(
+                    is_cleared=False, is_disapprove=True).order_by('-date_cleared')
+
+                # Filter by student clearance with library clearance cleared
+                queryset = queryset.filter(clearance__library_clearance__is_cleared=True, clearance__sport_clearance__is_cleared=False,
+                                           clearance__internal_audit_clearance__is_cleared=False, clearance__departmental_clearance__is_cleared=False)
+                return queryset
+
+            elif office_type == 'Sport':
+
+                # Retrieve hostel clearances that are not cleared and not disapproved
+                queryset = SportClearance.objects.filter(
+                    is_cleared=False, is_disapprove=True).order_by('-date_cleared')
+
+                # Filter by student clearance with library clearance cleared
+                queryset = queryset.filter(clearance__library_clearance__is_cleared=True, clearance__hostel_clearance__is_cleared=True,
+                                           clearance__internal_audit_clearance__is_cleared=False, clearance__departmental_clearance__is_cleared=False)
+                return queryset
+
+            elif office_type == 'Internal Audit':
+
+                # Retrieve hostel clearances that are not cleared and not disapproved
+                queryset = InternalAuditClearance.objects.filter(
+                    is_cleared=False, is_disapprove=True).order_by('-date_cleared')
+
+                # Filter by student clearance with library clearance cleared
+                queryset = queryset.filter(clearance__library_clearance__is_cleared=True, clearance__hostel_clearance__is_cleared=True,
+                                           clearance__sport_clearance__is_cleared=True, clearance__departmental_clearance__is_cleared=False)
+                return queryset
+
+            elif office_type == 'Department':
+
+                # Retrieve hostel clearances that are not cleared and not disapproved
+                queryset = DepartmentalClearance.objects.filter(
+                    is_cleared=False, is_disapprove=True).order_by('-date_cleared')
+
+                profile = AdministrativeProfile.objects.get(
+                    user=User.objects.get(username=self.request.user))
+
+                # Filter by student clearance with library clearance cleared
+                queryset = queryset.filter(clearance__library_clearance__is_cleared=True, clearance__hostel_clearance__is_cleared=True,
+                                           clearance__sport_clearance__is_cleared=True, clearance__internal_audit_clearance__is_cleared=True, department=profile.a_departmental_office)
+                return queryset
+
+        else:
+
+            pass
+
+    def post(self, request, *args, **kwargs):
+
+        office_type = self.get_office_type()
+
+        if office_type != None:
+
+            if office_type == 'Library':
+                # get library student
+                if 'approve' in request.POST:
+                    clearance_id = request.POST['clearance_id']
+                    library_clearance = LibraryClearance.objects.get(
+                        pk=clearance_id)
+
+                    library_clearance.is_cleared = True
+                    library_clearance.is_disapprove = False
+                    library_clearance.number_of_book_owe_departmental = None
+                    library_clearance.cost_of_book_owe_departmental = None
+                    library_clearance.number_of_book_owe_main = None
+                    library_clearance.cost_of_book_owe_main = None
+
+                    library_clearance.cleared_by = AdministrativeProfile.objects.get(
+                        user=self.request.user)
+                    messages.success(
+                        request, "Student clearance has been approved")
+                    library_clearance.save()
+
+                    return HttpResponseRedirect(self.get_success_url())
+
+            if office_type == 'Hostel':
+                # get library student
+                clearance_id = request.POST['clearance_id']
+                hostel_clearance = HostelClearance.objects.get(pk=clearance_id)
+
+                if 'approve' in request.POST:
+                    hostel_clearance.is_cleared = True
+                    hostel_clearance.is_disapprove = False
+                    hostel_clearance.number_of_hostel_items_owed = None
+                    hostel_clearance.cost_of_hostel_items_owed = None
+
+                    hostel_clearance.cleared_by = AdministrativeProfile.objects.get(
+                        user=self.request.user)
+                    messages.success(
+                        request, "Student clearance has been approved")
+                    hostel_clearance.save()
+
+                    return HttpResponseRedirect(self.get_success_url())
+
+            if office_type == 'Sport':
+                # get library student
+                clearance_id = request.POST['clearance_id']
+                sport_clearance = SportClearance.objects.get(pk=clearance_id)
+
+                if 'approve' in request.POST:
+                    sport_clearance.is_cleared = True
+                    sport_clearance.is_disapprove = False
+                    sport_clearance.number_sport_items_owed = None
+                    sport_clearance.cost_of_sport_items_owed = None
+
+                    sport_clearance.cleared_by = AdministrativeProfile.objects.get(
+                        user=self.request.user)
+                    messages.success(
+                        request, "Student clearance has been approved")
+                    sport_clearance.save()
+
+                    return HttpResponseRedirect(self.get_success_url())
+
+            if office_type == 'Internal Audit':
+                # get internal audit student
+                clearance_id = request.POST['clearance_id']
+                internal_clearance = InternalAuditClearance.objects.get(
+                    pk=clearance_id)
+
+                if 'approve' in request.POST:
+                    internal_clearance.is_cleared = True
+                    internal_clearance.is_disapprove = False
+                    internal_clearance.disapproval_reason = None
+                    internal_clearance.cleared_by = AdministrativeProfile.objects.get(
+                        user=self.request.user)
+                    messages.success(
+                        request, "Student clearance has been approved")
+                    internal_clearance.save()
+
+                    return HttpResponseRedirect(self.get_success_url())
+
+            if office_type == 'Department':
+                # get internal audit student
+                clearance_id = request.POST['clearance_id']
+                department_clearance = DepartmentalClearance.objects.get(
+                    pk=clearance_id)
+
+                if 'approve' in request.POST:
+                    department_clearance.is_cleared = True
+                    department_clearance.is_disapprove = False
+                    department_clearance.disapproval_reason = None
+                    department_clearance.cleared_by = AdministrativeProfile.objects.get(
+                        user=self.request.user)
+                    messages.success(
+                        request, "Student clearance has been approved")
+                    department_clearance.save()
+
+                    return HttpResponseRedirect(self.get_success_url())
+
+        else:
+            # Failed in getting office type
+            pass
+
+
+class UpdateStudentProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = "backend/users/update_profile.html"
+    form_class = UpdateSingleStudentForm
+    success_message = 'Updated Successfully!'
+    queryset = User.objects.all()
+
+    def get_success_url(self):
+        return reverse("auth:update_student_profile", kwargs={'pk': self.object.pk})
+
+    def get_object(self, queryset=None):
+        user = super().get_object(queryset=queryset)
+        try:
+            student_profile = StudentProfile.objects.get(user=user)
+            return student_profile
+        except StudentProfile.DoesNotExist:
+            return user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['student_profile'] = self.object
+        return context
+
+
+class ChangePassword(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+
+        password0 = request.POST.get('password0')
+        password = request.POST.get('password1')
+        password1 = request.POST.get('password2')
+
+        if (password != password1):
+            messages.error(
+                request, 'New password and confirm password does not match!')
+            return redirect('auth:update_student_profile', self.kwargs['pk'])
+
+        if (len(password1) < 6):
+            messages.error(
+                request, 'password too short! should not be less than 6 characters')
+            return redirect('auth:update_student_profile', self.kwargs['pk'])
+
+        user = User.objects.get(pk=self.kwargs['pk'])
+
+        if not user.check_password(password0):
+            messages.error(request, 'Old password incorrect!')
+            return redirect('auth:update_student_profile', self.kwargs['pk'])
+
+        user.set_password(password)
+        user.save()
+
+        messages.success(
+            request, 'Password reset successful, you can now login!!')
+        return redirect('auth:login')
+
+
+class PrintClearanceView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
+    form_class = ClearanceForm
+    template_name = "backend/users/print_clearance.html"
+
+    def get(self, request, *args, **kwargs):
+        student_clearance = StudentClearance.objects.filter(
+                student=StudentProfile.objects.get(user=self.request.user))
+
+        if student_clearance[0].departmental_clearance.is_cleared:
+            return self.render_to_response(self.get_context_data())
+        else:
+            messages.error(
+                self.request, "You are not yet cleared!!")
+            return redirect('auth:dashboard')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        student_profile = StudentProfile.objects.get(user=self.request.user)
+        context['student_profile'] = student_profile
+
+        library = AdministrativeProfile.objects.filter(
+            office=Office.objects.get(office_title='Library'))[0]
+        hostel = AdministrativeProfile.objects.filter(
+            office=Office.objects.get(office_title='Hostel'))[0]
+        sport = AdministrativeProfile.objects.filter(
+            office=Office.objects.get(office_title='Sport'))[0]
+        audit = AdministrativeProfile.objects.filter(
+            office=Office.objects.get(office_title='Internal Audit'))[0]
+        department = AdministrativeProfile.objects.filter(
+            a_departmental_office=student_profile.department)[0]
+        print(library)
+        context['library'] = library
+        context['hostel'] = hostel
+        context['sport'] = sport
+        context['audit'] = audit
+        context['department'] = department
+        return context

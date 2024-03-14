@@ -3,8 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from django.shortcuts import reverse
 import uuid
 from datetime import datetime
-# # Create your models here.
-
+# Create your models here.
 
 class UserManager(BaseUserManager):
     def create_user(self, username, name, password=None):

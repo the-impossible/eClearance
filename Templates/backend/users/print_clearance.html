@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Apply Clearance {% endblock title %}
+
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    {% block nav %}{% include 'partials/auth_nav.html' %}{% endblock nav %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      {% include 'partials/auth_sidebar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include "partials/messages.html" %}
+
+          <div class="row">
+            <div class="col.lg-12 grid-margin">
+
+            </div>
+          </div>
+
+          <div class="row">
+
+            <div class="col-lg-10 grid-margin stretch-card mx-auto">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Print Clearance</h4>
+
+                  <div class="row mt-3" id="content">
+                    <div class="col-12" >
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="text-center">
+                            <h5>KADUNA POLYTECHNIC</h5>
+                            <h5><i>(Established as Kaduna Technical Institute in 1956)</i></h5>
+                            <h5>Students Affairs Registry</h5>
+                            <h5><i>COLLEGE OF SCIENCE AND TECHNOLOGY</i></h5>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-5">
+                              <br>
+                              <br>
+                              <p><b>Ag. Rector: Dr Suleiman Umar</b></p>
+                              <p><b>B.Sc Ed Math's M.Ed Math's PhD, MAN</b></p>
+
+                              <br>
+                              <br>
+
+                              <p><b>Dean. Dr. Aliyu Usman</b></p>
+                              <p><b>FRSS, MPSS, MUSA, MMAN</b></p>
+                            </div>
+                            <div class="col-2 text-center">
+                              <br>
+                              <img src="{% static 'img/logo.png' %}" alt="" width="100">
+                            </div>
+                            <div class="col-2"></div>
+                            <div class="col-3">
+                              <br>
+                              <br>
+                              <p class="justify-content-end"><b>Polytechnic Road,</b></p>
+                              <p><b>Tudun Wada</b></p>
+                              <p><b>P.M.B, 2021</b></p>
+                              <p><b>Kaduna, Nigeria</b></p>
+                            </div>
+                          </div>
+                          <br>
+                          <h6><b>CLEARANCE CERTIFICATE</b></h6>
+                          <p style="font-size: 18;">This form must be completed by all students and signed by all concern before leaving the College, Failure to do so will lead to delays in the issue of your certificate and other important documents.</p>
+
+                          <div class="row">
+                            <div class="col-3">
+                              <h5>Section One:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>Student Details</h6>
+                              <br>
+                              <ol>
+                                <li> <h6>Full Name: {{request.user.name}}</h6> </li>
+                                <li> <h6>Reg No: {{request.user.username}} </h6> </li>
+                                <li> <h6>Department: {{student_profile.department}}</h6></li>
+                                <li> <h6>Certificate/Diploma/HND: {{student_profile.programme}} </h6> </li>
+                              </ol>
+                            </div>
+
+                            <div class="col-3">
+                              <h5>Section Two:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>Library Officer Signature</h6>
+                              <img src="{{library.signature.url}}" alt="" width="100">
+                            </div>
+
+                            <div class="col-3">
+                              <h5>Section Three:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>Sport Officer Signature</h6>
+                              <img src="{{sport.signature.url}}" alt="" width="100">
+                            </div>
+
+                            <div class="col-3">
+                              <h5>Section Four:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>House Warden Signature</h6>
+                              <img src="{{hostel.signature.url}}" alt="" width="100">
+                            </div>
+
+                            <div class="col-3">
+                              <h5>Section Five:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>Forwarding address for all correspondence including examination results </h6>
+                            </div>
+
+                            <div class="col-3">
+                              <h5>Section Six:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>Above named student has been cleared </h6>
+                            </div>
+
+                            <div class="col-3">
+                              <h5>Section Seven:</h5>
+                            </div>
+                            <div class="col-9">
+                              <h6>Internal Auditor Signature </h6>
+                              <img src="{{audit.signature.url}}" alt="" width="100">
+                            </div>
+
+                            <div class="col-7">
+                              <div class="row">
+                                <div class="col-4">
+                                  <h6>HOD's Signature:</h6>
+                                </div>
+                                <div class="col-4 mt-0">
+                                  <img src="{{department.signature.url}}" alt="" width="100">
+                                </div>
+                                <div class="col-4">
+                                  <h6>Date: {% now "d-m-Y" %}</h6>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+
+                          <h6>I declared the above information to be correct</h6>
+                            <br>
+                            <h6>Student's Signature: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date:</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="card-footer">
+                  <div class="row float-right">
+                    <div class="d-grid gap-2 ">
+                      <button class="btn btn-primary btn-lg" id="print">Print</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        {% block footer %}{% include 'partials/auth_footer.html' %}{% endblock footer %}
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+{% include 'partials/modal_logout.html' %}
+{% block script %}{% include 'partials/auth_script.html' %}{% endblock script %}
+
+{% endblock body %}

@@ -67,18 +67,34 @@
         <div class="collapse" id="ui-clearance">
           <ul class="nav flex-column sub-menu">
             <li class="nav-item"> <a class="nav-link" href="{% url 'auth:manage_clearance' %}">My Clearance</a></li>
-            <li class="nav-item"> <a class="nav-link" href="{% url 'auth:manage_clearance' %}">Print Clearance</a></li>
+            <li class="nav-item"> <a class="nav-link" href="{% url 'auth:print_clearance' %}">Print Clearance</a></li>
           </ul>
         </div>
       </li>
 
       {% endif %}
 
+
       <li class="nav-item">
-        <a class="nav-link" href="pages/icons/feather-icons.html">
-          <i class="icon-help menu-icon"></i>
-          <span class="menu-title">Profile</span>
-        </a>
+        {% if request.user.user_type.user_type == "Student" %}
+        <a class="nav-link"
+        href="{% url 'auth:update_student_profile' request.user.pk %}">
+        <i class="icon-help menu-icon"></i>
+        <span class="menu-title">Profile</span>
+      </a>
+      {% elif request.user.user_type.user_type == "Office" %}
+      <a class="nav-link"
+        href="{% url 'auth:update_student_profile' request.user.pk %}">
+        <i class="icon-help menu-icon"></i>
+        <span class="menu-title">Profile</span>
+      </a>
+      {% elif request.user.user_type.user_type == "Admin" %}
+      <a class="nav-link"
+        href="{% url 'auth:update_student_profile' request.user.pk %}">
+        <i class="icon-help menu-icon"></i>
+        <span class="menu-title">Profile</span>
+      </a>
+      {% endif %}
       </li>
 
       <li class="nav-item">

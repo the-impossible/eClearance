@@ -191,7 +191,7 @@ class CreateAdministrativeProfileForm(forms.ModelForm):
         }
     ))
 
-    signature = forms.ImageField(required=False, widget=forms.FileInput(
+    signature = forms.ImageField(widget=forms.FileInput(
         attrs={
             'class': 'form-control',
             'type': 'file',
@@ -505,3 +505,20 @@ class DepartmentClearanceForm(forms.ModelForm):
     class Meta:
         model = DepartmentalClearance
         fields = ('disapproval_reason',)
+
+class UpdateSingleStudentForm(forms.ModelForm):
+
+
+    passport = forms.ImageField(required=True, widget=forms.FileInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'file',
+            'accept': 'image/png, image/jpeg'
+        }
+    ))
+
+
+    class Meta:
+        model = User
+        fields = ('passport',)
+

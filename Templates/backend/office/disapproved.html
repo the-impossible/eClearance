@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Update Clearance Application{% endblock title %}
+
+{% block head %}{% include 'partials/auth_head.html' %}{% endblock head %}
+
+{% block body %}
+
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    {% block nav %}{% include 'partials/auth_nav.html' %}{% endblock nav %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      {% include 'partials/auth_sidebar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          {% include "partials/messages.html" %}
+          <div class="row">
+
+            <div class="col.lg-12 grid-margin">
+              <a href="{% url 'auth:clearance_application' %}" class="btn rounded-pill btn-primary ml-4">
+                <span class="tf-icons bx bx-pie-chart-alt"></span>&nbsp; View all application
+              </a>
+            </div>
+
+
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Manage Clearance</h4>
+
+                  <p class="card-description">
+                    Use the table below to <code>update</code> students on their disapproved {{office}} clearance application
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>S/N</th>
+                          <th>Name</th>
+                          <th>RegNo.</th>
+                          <th>Passport</th>
+                          <th>Department</th>
+                          <th>Session</th>
+                          <th>Programme</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                        {% if object_list %}
+
+                          {% for object in object_list %}
+                            <tr>
+                              <td>{{forloop.counter}}</td>
+                              <td>{{object.clearance.student.user.name|upper}}</td>
+                              <td>{{object.clearance.student.user.username}}</td>
+                              <td>
+                                <a href=""> <img src="{{object.clearance.student.user.passport.url}}" alt="passport"></a>
+                              </td>
+                              <td>{{object.clearance.student.department}}</td>
+                              <td><label class="badge badge-danger">{{object.clearance.student.session}}</label></td>
+                              <td class="text-success"> {{object.clearance.student.programme}} </td>
+                              <td><button type="button" class="btn rounded-pill btn-success btn-sm" data-toggle="modal"
+                                data-target="#approve{{forloop.counter}}">Clear Student
+                                </button></td>
+                            </tr>
+                              <!-- Modal Student -->
+                              <div class="modal fade to_remove" id="approve{{forloop.counter}}" style="display: none;" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title">Clearance Action</h5>
+                                      <button type="button" class="close btn btn-secondary" data-dismiss="modal"><span>×</span>
+                                      </button>
+                                    </div>
+                                    <div class="modal-body">
+                                      {% if office == 'Internal Audit' %}
+                                      Ensure students has uploaded the correct documents otherwise simply ignore
+                                      {% else %}
+                                      Ensure student has <code>returned</code>collected items otherwise simply ignore
+                                      {% endif %}
+                                        <br>
+                                        <br>
+                                        <form method="POST">
+                                          <b>NB: This process is non-reversal</b>
+                                          <p>Ensure the student has meets <code>approval</code> requirements</p>
+                                          <p> Click the button below to approve clearance application for <b>{{object.clearance.student.user.name|upper}}</b> with registration number of <b>{{object.clearance.student.user.username}}</b> </p>
+                                          {% csrf_token %}
+                                          {% if office == 'Internal Audit' %}
+                                            <div class="parent-container{{forloop.counter}}">
+                                              <a id="viewFile" href="{{ object.departmental_clearance_one.url }}" class="btn btn-success btn-sm viewFile" title="Departmental clearance year 1">re-view uploaded files</a>
+                                              <br>
+                                              <br>
+                                              <a href="{{ object.departmental_clearance_two.url }}" title="Departmental clearance year 2"></a>
+                                              <a href="{{ object.school_fee_receipt_one.url }}" title="School fees receipt year 1"></a>
+                                              <a href="{{ object.school_fee_receipt_two.url }}" title="School fees receipt year 2"></a>
+                                              <a href="{{ object.school_id_card.url }}" title="School ID card"></a>
+                                              <a href="{{ object.remita_one.url }}" title="Remita One"></a>
+                                              <a href="{{ object.remita_two.url }}" title="Remita Two"></a>
+                                            </div>
+                                            {% endif %}
+
+                                          <input type="hidden" name="clearance_id" value="{{object.pk}}">
+                                          <button class="btn btn-success btn-sm" name="approve" type="submit">Approve</button>
+                                        </form>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                          {% endfor %}
+
+                        {% else %}
+                        <tr>
+                          <td colspan="12">
+                            <div class="jumbotron text-center p-5">
+                              <!-- illustration can be used here too -->
+                              <p style="font-size: 4em;">📂</p> <br> <br>
+                              <p style="font-size: 1.5em;">No {{office}} disapproved Clearance Record!</p>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+        {% block footer %}{% include 'partials/auth_footer.html' %}{% endblock footer %}
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+{% include 'partials/modal_logout.html' %}
+{% block script %}{% include 'partials/auth_script.html' %}{% endblock script %}
+
+{% endblock body %}

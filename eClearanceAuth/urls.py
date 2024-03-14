@@ -24,5 +24,14 @@ urlpatterns = [
 
     #Student-------> clearance
     path('manage_clearance', ApplyClearanceView.as_view(), name="manage_clearance"),
+    path('update_student_profile/<str:pk>', UpdateStudentProfileView.as_view(), name="update_student_profile"),
+    path('print_clearance', PrintClearanceView.as_view(), name="print_clearance"),
+
+
+    #Office-------> clearance
     path('clearance_application', ClearanceApplicationView.as_view(), name="clearance_application"),
+    path('disapproved_application', DisapprovedApplicationView.as_view(), name="disapproved_application"),
+
+    path('change_password/<str:pk>',
+         ChangePassword.as_view(), name="change_password"),
 ]
